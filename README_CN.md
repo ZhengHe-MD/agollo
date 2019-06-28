@@ -35,6 +35,13 @@
 ### 使用自定义配置启动
 
 ```golang
+    agollo.StartWithConf(&agollo.Conf{
+        AppID:          "SampleApp",
+        Cluster:        "default",
+        NameSpaceNames: []string{"application"},
+        CacheDir:       "/tmp/agollo",
+        IP:             "localhost:8080", 
+    })
     agollo.StartWithConfFile(name)
 ```
 
@@ -50,14 +57,20 @@
 ### 获取配置
 
 ```golang
-    agollo.GetStringValue(Key, defaultValue)
-    agollo.GetStringValueWithNameSapce(namespace, key, defaultValue)
+    agollo.GetString(key, defaultValue)
+    agollo.GetStringWithNamespace(namespace, key, defaultValue)
+    agollo.GetInt(key, defaultValue）
+    agollo.GetIntWithNamespace(namespace, key, defaultValue)
+    agollo.GetBool(key, defaultValue)
+    agollo.GetBoolWithNamespace(namespace, key, defaultValue)
+    agollo.GetFloat64(key, defaultValue)
+    agollo.GetFloat64WithNamespace(namespace, key, defaultValue)
 ```
 
 ### 获取文件内容
 
 ```golang
-    agollo.GetNameSpaceContent(namespace, defaultValue)
+    agollo.GetNamespaceContent(namespace, defaultValue)
 ```
 
 ### 获取配置中所有的键

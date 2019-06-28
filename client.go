@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"strconv"
 )
 
 // Client for apollo
@@ -125,8 +126,7 @@ func (c *Client) SubscribeToNamespaces(namespaces ...string) error {
 	return c.longPoller.addNamespaces(namespaces...)
 }
 
-// GetStringValueWithNameSpace get value from given namespace
-func (c *Client) GetStringValueWithNameSpace(namespace, key, defaultValue string) string {
+func (c *Client) GetStringWithNamespace(namespace, key, defaultValue string) string {
 	cache := c.mustGetCache(namespace)
 	if ret, ok := cache.get(key); ok && ret != "" {
 		return ret
@@ -134,14 +134,51 @@ func (c *Client) GetStringValueWithNameSpace(namespace, key, defaultValue string
 	return defaultValue
 }
 
-// GetStringValue from default namespace
-func (c *Client) GetStringValue(key, defaultValue string) string {
-	return c.GetStringValueWithNameSpace(defaultNamespace, key, defaultValue)
+func (c *Client) GetString(key, defaultValue string) string {
+	return c.GetStringWithNamespace(defaultNamespace, key, defaultValue)
 }
 
-// GetNameSpaceContent get contents of namespace
-func (c *Client) GetNameSpaceContent(namespace, defaultValue string) string {
-	return c.GetStringValueWithNameSpace(namespace, "content", defaultValue)
+func (c *Client) GetNamespaceContent(namespace, defaultValue string) string {
+	return c.GetStringWithNamespace(namespace, "content", defaultValue)
+}
+
+func (c *Client) GetIntWithNamespace(namespace, key string, defaultValue int) int {
+	s := c.GetStringWithNamespace(namespace, key, "")
+	v, err := strconv.Atoi(s)
+	if err != nil {
+		return defaultValue
+	}
+	return v
+}
+
+func (c *Client) GetInt(key string, defaultValue int) int {
+	return c.GetIntWithNamespace(defaultNamespace, key, defaultValue)
+}
+
+func (c *Client) GetFloat64WithNamespace(namespace, key string, defaultValue float64) float64 {
+	s := c.GetStringWithNamespace(namespace, key, "")
+	v, err := strconv.ParseFloat(s, 64)
+	if err != nil {
+		return defaultValue
+	}
+	return v
+}
+
+func (c *Client) GetFloat64(key string, defaultValue float64) float64 {
+	return c.GetFloat64WithNamespace(defaultNamespace, key, defaultValue)
+}
+
+func (c *Client) GetBoolWithNamespace(namespace, key string, defaultValue bool) bool {
+	s := c.GetStringWithNamespace(namespace, key, "")
+	b, err := strconv.ParseBool(s)
+	if err != nil {
+		return defaultValue
+	}
+	return b
+}
+
+func (c *Client) GetBool(key string, defaultValue bool) bool {
+	return c.GetBoolWithNamespace(defaultNamespace, key, defaultValue)
 }
 
 // GetAllKeys return all config keys in given namespace

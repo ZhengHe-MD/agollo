@@ -1,3 +1,5 @@
+Note: This is a fork of github.com/philchia/agollo
+
 # agollo is a golang client for apollo 🚀 [![CircleCI](https://circleci.com/gh/philchia/agollo/tree/master.svg?style=svg)](https://circleci.com/gh/philchia/agollo/tree/master)
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/philchia/agollo)](https://goreportcard.com/report/github.com/philchia/agollo)
@@ -25,7 +27,7 @@
 ## Installation
 
 ```sh
-    go get -u github.com/philchia/agollo
+    go get -u github.com/ZhengHe-MD/agollo
 ```
 
 ## Usage
@@ -39,6 +41,13 @@
 ### Start use given config file path
 
 ```golang
+    agollo.StartWithConf(&agollo.Conf{
+        AppID:          "SampleApp",
+       	Cluster:        "default",
+       	NameSpaceNames: []string{"application"},
+       	CacheDir:       "/tmp/agollo",
+       	IP:             "localhost:8080", 
+    })
     agollo.StartWithConfFile(name)
 ```
 
@@ -54,14 +63,20 @@
 ### Get apollo values
 
 ```golang
-    agollo.GetStringValue(Key, defaultValue)
-    agollo.GetStringValueWithNameSpace(namespace, key, defaultValue)
+    agollo.GetString(key, defaultValue)
+    agollo.GetStringWithNamespace(namespace, key, defaultValue)
+    agollo.GetInt(key, defaultValue）
+    agollo.GetIntWithNamespace(namespace, key, defaultValue)
+    agollo.GetBool(key, defaultValue)
+    agollo.GetBoolWithNamespace(namespace, key, defaultValue)
+    agollo.GetFloat64(key, defaultValue)
+    agollo.GetFloat64WithNamespace(namespace, key, defaultValue)
 ```
 
 ### Get namespace file contents
 
 ```golang
-    agollo.GetNameSpaceContent(namespace, defaultValue)
+    agollo.GetNamespaceContent(namespace, defaultValue)
 ```
 
 ### Get all keys

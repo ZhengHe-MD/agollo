@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/philchia/agollo/internal/mockserver"
+	"github.com/ZhengHe-MD/agollo/internal/mockserver"
 )
 
 func TestMain(m *testing.M) {
@@ -84,9 +84,9 @@ func TestAgolloStart(t *testing.T) {
 	case <-time.After(time.Millisecond * 30000):
 	}
 
-	val := GetStringValue("key", "defaultValue")
+	val := GetString("key", "defaultValue")
 	if val != "value" {
-		t.Errorf("GetStringValue of key should = value, got %v", val)
+		t.Errorf("GetString of key should = value, got %v", val)
 		return
 	}
 
@@ -102,9 +102,9 @@ func TestAgolloStart(t *testing.T) {
 	case <-time.After(time.Millisecond * 30000):
 	}
 
-	val = defaultClient.GetStringValue("key", "defaultValue")
+	val = defaultClient.GetString("key", "defaultValue")
 	if val != "newvalue" {
-		t.Errorf("GetStringValue of key should = newvalue, got %v", val)
+		t.Errorf("GetString of key should = newvalue, got %v", val)
 		return
 	}
 
@@ -120,9 +120,9 @@ func TestAgolloStart(t *testing.T) {
 	case <-time.After(time.Millisecond * 30000):
 	}
 
-	val = GetStringValue("key", "defaultValue")
+	val = GetString("key", "defaultValue")
 	if val != "defaultValue" {
-		t.Errorf("GetStringValue of key should = defaultValue, got %v", val)
+		t.Errorf("GetString of key should = defaultValue, got %v", val)
 		return
 	}
 
@@ -140,7 +140,7 @@ func TestAgolloStart(t *testing.T) {
 
 	val = GetNameSpaceContent("client.json", "{}")
 	if val != `{"name":"agollo"}` {
-		t.Errorf(`GetStringValue of client.json content should  = {"name":"agollo"}, got %v`, val)
+		t.Errorf(`GetString of client.json content should  = {"name":"agollo"}, got %v`, val)
 		return
 	}
 
@@ -155,9 +155,28 @@ func TestAgolloStart(t *testing.T) {
 	case <-time.After(time.Millisecond * 30000):
 	}
 
-	val = GetStringValueWithNameSpace("new_namespace.json", "key", "defaultValue")
+	val = GetStringWithNamespace("new_namespace.json", "key", "defaultValue")
 	if val != `1` {
-		t.Errorf(`GetStringValueWithNameSpace of new_namespace.json content should  = 1, got %v`, val)
+		t.Errorf(`GetStringWithNamespace of new_namespace.json content should  = 1, got %v`, val)
+		return
+	}
+
+
+	intVal := GetIntWithNamespace("new_namespace.json", "key", 0)
+	if intVal != 1 {
+		t.Errorf(`GetIntWithNamespace of new_namespace.json content should = 1, got %v`, intVal)
+		return
+	}
+
+	boolVal := GetBoolWithNamespace("new_namespace.json", "key", false)
+	if !boolVal {
+		t.Errorf(`GetBoolWithNamespace of new_namespace.json content should = true, got %v`, boolVal)
+		return
+	}
+
+	float64Val := GetFloat64WithNamespace("new_namespace.json", "key", float64(0))
+	if float64Val != float64(1) {
+		t.Errorf(`GetFloat64WithNamespace of new_namespace.json content should = 1, got %v`, float64Val)
 		return
 	}
 }

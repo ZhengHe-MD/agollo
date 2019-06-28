@@ -40,19 +40,43 @@ func SubscribeToNamespaces(namespaces ...string) error {
 	return defaultClient.SubscribeToNamespaces(namespaces...)
 }
 
-// GetStringValueWithNameSpace get value from given namespace
-func GetStringValueWithNameSpace(namespace, key, defaultValue string) string {
-	return defaultClient.GetStringValueWithNameSpace(namespace, key, defaultValue)
+// GetStringWithNamespace get value from given namespace
+func GetStringWithNamespace(namespace, key, defaultValue string) string {
+	return defaultClient.GetStringWithNamespace(namespace, key, defaultValue)
 }
 
-// GetStringValue from default namespace
-func GetStringValue(key, defaultValue string) string {
-	return GetStringValueWithNameSpace(defaultNamespace, key, defaultValue)
+// GetString from default namespace
+func GetString(key, defaultValue string) string {
+	return GetStringWithNamespace(defaultNamespace, key, defaultValue)
 }
 
-// GetNameSpaceContent get contents of namespace
+func GetIntWithNamespace(namespace, key string, defaultValue int) int {
+	return defaultClient.GetIntWithNamespace(namespace, key, defaultValue)
+}
+
+func GetInt(key string, defaultValue int) int {
+	return defaultClient.GetInt(key, defaultValue)
+}
+
+func GetFloat64WithNamespace(namespace, key string, defaultValue float64) float64 {
+	return defaultClient.GetFloat64WithNamespace(namespace, key, defaultValue)
+}
+
+func GetFloat64(key string, defaultValue float64) float64 {
+	return defaultClient.GetFloat64(key, defaultValue)
+}
+
+func GetBoolWithNamespace(namespace, key string, defaultValue bool) bool {
+	return defaultClient.GetBoolWithNamespace(namespace, key, defaultValue)
+}
+
+func GetBool(key string, defaultValue bool) bool {
+	return defaultClient.GetBool(key, defaultValue)
+}
+
+// GetNamespaceContent get contents of namespace
 func GetNameSpaceContent(namespace, defaultValue string) string {
-	return defaultClient.GetNameSpaceContent(namespace, defaultValue)
+	return defaultClient.GetNamespaceContent(namespace, defaultValue)
 }
 
 // GetAllKeys return all config keys in given namespace
