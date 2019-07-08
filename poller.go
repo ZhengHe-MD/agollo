@@ -3,7 +3,6 @@ package agollo
 import (
 	"context"
 	"encoding/json"
-	"log"
 	"net/http"
 	"sync/atomic"
 	"time"
@@ -90,7 +89,7 @@ func (p *longPoller) watchUpdates() {
 		select {
 		case <-timer.C:
 			if err := p.pumpUpdates(); err != nil {
-				log.Println("[agollo] err watchUpdates:", err)
+				defaultLogger.Printf("[agollo] watchUpdates err:%v", err)
 			}
 			timer.Reset(p.pollerInterval)
 

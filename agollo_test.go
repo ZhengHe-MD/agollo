@@ -161,7 +161,6 @@ func TestAgolloStart(t *testing.T) {
 		return
 	}
 
-
 	intVal := GetIntWithNamespace("new_namespace.json", "key", 0)
 	if intVal != 1 {
 		t.Errorf(`GetIntWithNamespace of new_namespace.json content should = 1, got %v`, intVal)
