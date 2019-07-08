@@ -3,6 +3,7 @@ package agollo
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 	"sync/atomic"
 	"time"
@@ -76,7 +77,9 @@ func (p *longPoller) addNamespaces(namespaces ...string) error {
 		}
 	}
 	if update {
-		p.pumpUpdates()
+		if err := p.pumpUpdates(); err != nil {
+			log.Println("[agollo] err addNamespaces:", err)
+		}
 	}
 	return nil
 }
@@ -88,7 +91,9 @@ func (p *longPoller) watchUpdates() {
 	for {
 		select {
 		case <-timer.C:
-			p.pumpUpdates()
+			if err := p.pumpUpdates(); err != nil {
+				log.Println("[agollo] err watchUpdates:", err)
+			}
 			timer.Reset(p.pollerInterval)
 
 		case <-p.ctx.Done():
