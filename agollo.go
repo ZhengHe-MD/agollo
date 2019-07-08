@@ -1,7 +1,13 @@
 package agollo
 
+import (
+	"log"
+	"os"
+)
+
 var (
 	defaultClient *Client
+	defaultLogger AgolloLogger = log.New(os.Stderr, "", log.LstdFlags)
 )
 
 // Start agollo
@@ -87,4 +93,8 @@ func GetAllKeys(namespace string) []string {
 // GetReleaseKey return release key for namespace
 func GetReleaseKey(namespace string) string {
 	return defaultClient.GetReleaseKey(namespace)
+}
+
+func SetLogger(logger AgolloLogger) {
+	defaultLogger = logger
 }

@@ -19,6 +19,7 @@ Note: This is a fork of github.com/philchia/agollo
 * Fail tolerant
 * Zero dependency
 * Realtime change notification
+* Customize logger
 
 ## Required
 
@@ -89,6 +90,22 @@ Note: This is a fork of github.com/philchia/agollo
 
 ```golang
     agollo.SubscribeToNamespaces("newNamespace1", "newNamespace2")
+```
+
+### Set Logger
+
+any logger that satisfies AgolloLogger interface
+
+```golang
+type AgolloLogger interface {
+	Printf(format string, v ...interface{})
+}
+```
+
+can be used inside agollo
+
+```golang
+    agollo.SetLogger(logger)
 ```
 
 ## License

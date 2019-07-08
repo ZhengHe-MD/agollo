@@ -77,9 +77,7 @@ func (p *longPoller) addNamespaces(namespaces ...string) error {
 		}
 	}
 	if update {
-		if err := p.pumpUpdates(); err != nil {
-			log.Println("[agollo] err addNamespaces:", err)
-		}
+		return p.pumpUpdates()
 	}
 	return nil
 }
@@ -134,6 +132,7 @@ func (p *longPoller) pumpUpdates() error {
 		}
 		p.updateNotificationConf(update)
 	}
+
 	return ret
 }
 

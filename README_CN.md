@@ -28,7 +28,7 @@
 
 ### 使用 app.properties 配置文件启动
 
-```golang
+```
     agollo.Start()
 ```
 
@@ -83,6 +83,22 @@
 
 ```golang
     agollo.SubscribeToNamespaces("newNamespace1", "newNamespace2")
+```
+
+### 设置 logger
+
+任何实现 AgolloLogger 接口的 Logger 
+
+```golang
+type AgolloLogger interface {
+	Printf(format string, v ...interface{})
+}
+```
+
+都可以作为 agollo 的默认 Logger:
+
+```golang
+    agollo.SetLogger(logger)
 ```
 
 ## 许可

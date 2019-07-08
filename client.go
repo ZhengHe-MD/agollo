@@ -52,22 +52,20 @@ func NewClient(conf *Conf) *Client {
 }
 
 // Start sync config
-func (c *Client) Start() error {
+func (c *Client) Start() (err error) {
 
 	// check cache dir
-	if err := c.autoCreateCacheDir(); err != nil {
+	if err = c.autoCreateCacheDir(); err != nil {
 		return err
 	}
 
 	// preload all config to local first
-	if err := c.preload(); err != nil {
-		return err
-	}
+	err = c.preload()
 
 	// start fetch update
 	go c.longPoller.start()
 
-	return nil
+	return
 }
 
 // handleNamespaceUpdate sync config for namespace, delivery changes to subscriber
