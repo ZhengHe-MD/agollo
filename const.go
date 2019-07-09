@@ -9,7 +9,9 @@ const (
 	defaultNamespace = "application"
 
 	longPollInterval      = time.Second * 2
-	longPollTimeout       = time.Second * 90
+	// NOTE: apollo will return 304 after 60 secs when querying config for a
+	//       unknown app, so timeout larger than 60 secs doesn't make sense
+	longPollTimeout       = time.Second * 5
 	queryTimeout          = time.Second * 2
 	defaultNotificationID = -1
 )
