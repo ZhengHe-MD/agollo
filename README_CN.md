@@ -29,65 +29,65 @@
 ### 使用 app.properties 配置文件启动
 
 ```
-    agollo.Start()
+agollo.Start()
 ```
 
 ### 使用自定义配置启动
 
 ```golang
-    agollo.StartWithConf(&agollo.Conf{
-        AppID:          "SampleApp",
-        Cluster:        "default",
-        NameSpaceNames: []string{"application"},
-        CacheDir:       "/tmp/agollo",
-        IP:             "localhost:8080", 
-    })
-    agollo.StartWithConfFile(name)
+agollo.StartWithConf(&agollo.Conf{
+    AppID:          "SampleApp",
+    Cluster:        "default",
+    NameSpaceNames: []string{"application"},
+    CacheDir:       "/tmp/agollo",
+    IP:             "localhost:8080", 
+})
+agollo.StartWithConfFile(name)
 ```
 
 ### 监听配置更新
 
 ```golang
-    type observer struct {}
-    func (m *observer) HandleChangeEvent(ce *ChangeEvent) {
-        fmt.Println(ce)
-    }
-    
-    recall := agollo.Register(&observer{})
-    defer recall()
-    
-    // ...
+type observer struct {}
+func (m *observer) HandleChangeEvent(ce *ChangeEvent) {
+    fmt.Println(ce)
+}
+
+recall := agollo.Register(&observer{})
+defer recall()
+
+// ...
 ```
 
 ### 获取配置
 
 ```golang
-    agollo.GetString(key, defaultValue)
-    agollo.GetStringWithNamespace(namespace, key, defaultValue)
-    agollo.GetInt(key, defaultValue）
-    agollo.GetIntWithNamespace(namespace, key, defaultValue)
-    agollo.GetBool(key, defaultValue)
-    agollo.GetBoolWithNamespace(namespace, key, defaultValue)
-    agollo.GetFloat64(key, defaultValue)
-    agollo.GetFloat64WithNamespace(namespace, key, defaultValue)
+agollo.GetString(key, defaultValue)
+agollo.GetStringWithNamespace(namespace, key, defaultValue)
+agollo.GetInt(key, defaultValue）
+agollo.GetIntWithNamespace(namespace, key, defaultValue)
+agollo.GetBool(key, defaultValue)
+agollo.GetBoolWithNamespace(namespace, key, defaultValue)
+agollo.GetFloat64(key, defaultValue)
+agollo.GetFloat64WithNamespace(namespace, key, defaultValue)
 ```
 
 ### 获取文件内容
 
 ```golang
-    agollo.GetNamespaceContent(namespace, defaultValue)
+agollo.GetNamespaceContent(namespace, defaultValue)
 ```
 
 ### 获取配置中所有的键
 
 ```golang
-    agollo.GetAllKeys(namespace)
+agollo.GetAllKeys(namespace)
 ```
 
 ### 订阅namespace的配置
 
 ```golang
-    agollo.SubscribeToNamespaces("newNamespace1", "newNamespace2")
+agollo.SubscribeToNamespaces("newNamespace1", "newNamespace2")
 ```
 
 ### 设置 logger
@@ -103,7 +103,7 @@ type AgolloLogger interface {
 都可以作为 agollo 的默认 Logger:
 
 ```golang
-    agollo.SetLogger(logger)
+agollo.SetLogger(logger)
 ```
 
 ## 许可

@@ -36,65 +36,65 @@ Note: This is a fork of github.com/philchia/agollo
 ### Start use default app.properties config file
 
 ```golang
-    agollo.Start()
+agollo.Start()
 ```
 
 ### Start use given config file path
 
 ```golang
-    agollo.StartWithConf(&agollo.Conf{
-        AppID:          "SampleApp",
-       	Cluster:        "default",
-       	NameSpaceNames: []string{"application"},
-       	CacheDir:       "/tmp/agollo",
-       	IP:             "localhost:8080", 
-    })
-    agollo.StartWithConfFile(name)
+agollo.StartWithConf(&agollo.Conf{
+    AppID:          "SampleApp",
+    Cluster:        "default",
+    NameSpaceNames: []string{"application"},
+    CacheDir:       "/tmp/agollo",
+    IP:             "localhost:8080", 
+})
+agollo.StartWithConfFile(name)
 ```
 
 ### Observe Updates
 
 ```golang
-    type observer struct {}
-    func (m *observer) HandleChangeEvent(ce *ChangeEvent) {
-        fmt.Println(ce)
-    }
-    
-    recall := agollo.Register(&observer{})
-    defer recall()
-    
-    // ...
+type observer struct {}
+func (m *observer) HandleChangeEvent(ce *ChangeEvent) {
+    fmt.Println(ce)
+}
+
+recall := agollo.Register(&observer{})
+defer recall()
+
+// ...
 ```
 
 ### Get apollo values
 
 ```golang
-    agollo.GetString(key, defaultValue)
-    agollo.GetStringWithNamespace(namespace, key, defaultValue)
-    agollo.GetInt(key, defaultValue）
-    agollo.GetIntWithNamespace(namespace, key, defaultValue)
-    agollo.GetBool(key, defaultValue)
-    agollo.GetBoolWithNamespace(namespace, key, defaultValue)
-    agollo.GetFloat64(key, defaultValue)
-    agollo.GetFloat64WithNamespace(namespace, key, defaultValue)
+agollo.GetString(key, defaultValue)
+agollo.GetStringWithNamespace(namespace, key, defaultValue)
+agollo.GetInt(key, defaultValue）
+agollo.GetIntWithNamespace(namespace, key, defaultValue)
+agollo.GetBool(key, defaultValue)
+agollo.GetBoolWithNamespace(namespace, key, defaultValue)
+agollo.GetFloat64(key, defaultValue)
+agollo.GetFloat64WithNamespace(namespace, key, defaultValue)
 ```
 
 ### Get namespace file contents
 
 ```golang
-    agollo.GetNamespaceContent(namespace, defaultValue)
+agollo.GetNamespaceContent(namespace, defaultValue)
 ```
 
 ### Get all keys
 
 ```golang
-    agollo.GetAllKeys(namespace)
+agollo.GetAllKeys(namespace)
 ```
 
 ### Subscribe to new namespaces
 
 ```golang
-    agollo.SubscribeToNamespaces("newNamespace1", "newNamespace2")
+agollo.SubscribeToNamespaces("newNamespace1", "newNamespace2")
 ```
 
 ### Set Logger
@@ -110,7 +110,7 @@ type AgolloLogger interface {
 can be used inside agollo
 
 ```golang
-    agollo.SetLogger(logger)
+agollo.SetLogger(logger)
 ```
 
 ## License
