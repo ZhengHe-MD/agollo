@@ -18,7 +18,7 @@ Note: This is a fork of github.com/philchia/agollo
 * Multiple namespace support
 * Fail tolerant
 * Zero dependency
-* Realtime change notification
+* Realtime change notification with observer pattern
 * Customize logger
 
 ## Required
@@ -52,13 +52,18 @@ Note: This is a fork of github.com/philchia/agollo
     agollo.StartWithConfFile(name)
 ```
 
-### Subscribe to updates
+### Observe Updates
 
 ```golang
-    events := agollo.WatchUpdate()
-    changeEvent := <-events
-    bytes, _ := json.Marshal(changeEvent)
-    fmt.Println("event:", string(bytes))
+    type observer struct {}
+    func (m *observer) HandleChangeEvent(ce *ChangeEvent) {
+        fmt.Println(ce)
+    }
+    
+    recall := agollo.Register(&observer{})
+    defer recall()
+    
+    // ...
 ```
 
 ### Get apollo values

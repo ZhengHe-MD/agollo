@@ -12,7 +12,7 @@
 * 多 namespace 支持
 * 容错，本地缓存
 * 零依赖
-* 实时更新通知
+* 实时更新通知 (observer pattern)
 
 ## 依赖
 
@@ -48,10 +48,15 @@
 ### 监听配置更新
 
 ```golang
-    events := agollo.WatchUpdate()
-    changeEvent := <-event
-    bytes, _ := json.Marshal(changeEvent)
-    fmt.Println("event:", string(bytes))
+    type observer struct {}
+    func (m *observer) HandleChangeEvent(ce *ChangeEvent) {
+        fmt.Println(ce)
+    }
+    
+    recall := agollo.Register(&observer{})
+    defer recall()
+    
+    // ...
 ```
 
 ### 获取配置
