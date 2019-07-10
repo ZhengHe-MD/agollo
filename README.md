@@ -28,7 +28,7 @@ Note: This is a fork of github.com/philchia/agollo
 ## Installation
 
 ```sh
-    go get -u github.com/ZhengHe-MD/agollo
+$ go get -u github.com/ZhengHe-MD/agollo
 ```
 
 ## Usage
