@@ -36,9 +36,28 @@ func Stop() error {
 	return defaultClient.Stop()
 }
 
-// WatchUpdate get all updates
-func WatchUpdate() <-chan *ChangeEvent {
-	return defaultClient.WatchUpdate()
+// StartWatchUpdate starts an infinite loop reading changeEvent from update channel
+//   and calls HandleChangeEvent method of all observers
+func StartWatchUpdate() {
+	ceChan := defaultClient.WatchUpdate()
+
+	go func(){
+		for {
+			ce := <-ceChan
+
+			for _, ob := range defaultClient.getObservers() {
+				ob.HandleChangeEvent(ce)
+			}
+		}
+	}()
+}
+
+// RegisterObserver registers an observer that will be notified when change event happens
+func RegisterObserver(observer ChangeEventObserver) (recall func()) {
+	defaultClient.registerObserver(observer)
+	return func() {
+		defaultClient.recallObserver(observer)
+	}
 }
 
 // SubscribeToNamespaces fetch namespace config to local and subscribe to updates

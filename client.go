@@ -8,6 +8,7 @@ import (
 	"os"
 	"path"
 	"strconv"
+	"sync"
 )
 
 // Client for apollo
@@ -24,6 +25,9 @@ type Client struct {
 
 	ctx    context.Context
 	cancel context.CancelFunc
+
+	observers []ChangeEventObserver
+	mu sync.RWMutex
 }
 
 // result of query config
@@ -292,4 +296,32 @@ func (c *Client) autoCreateCacheDir() error {
 	}
 
 	return nil
+}
+
+func (c *Client) registerObserver(observer ChangeEventObserver) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	c.observers = append(c.observers, observer)
+}
+
+func (c *Client) recallObserver(ob ChangeEventObserver) {
+	var newObservers []ChangeEventObserver
+	for _, observer := range c.getObservers() {
+		if observer != ob {
+			newObservers = append(newObservers, observer)
+		}
+	}
+
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	c.observers = newObservers
+}
+
+func (c *Client) getObservers() []ChangeEventObserver {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+
+	return c.observers
 }
