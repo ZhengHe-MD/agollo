@@ -20,6 +20,7 @@ Note: This is a fork of github.com/philchia/agollo
 * Zero dependency
 * Realtime change notification with observer pattern
 * Customize logger
+* Api redesigned in gopher's way -- `val, ok := agollo.GetXXX(key)`
 
 ## Required
 
@@ -69,20 +70,20 @@ defer recall()
 ### Get apollo values
 
 ```golang
-agollo.GetString(key, defaultValue)
-agollo.GetStringWithNamespace(namespace, key, defaultValue)
-agollo.GetInt(key, defaultValue）
-agollo.GetIntWithNamespace(namespace, key, defaultValue)
-agollo.GetBool(key, defaultValue)
-agollo.GetBoolWithNamespace(namespace, key, defaultValue)
-agollo.GetFloat64(key, defaultValue)
-agollo.GetFloat64WithNamespace(namespace, key, defaultValue)
+agollo.GetString(key)
+agollo.GetStringWithNamespace(namespace, key)
+agollo.GetInt(key)
+agollo.GetIntWithNamespace(namespace, key)
+agollo.GetBool(key)
+agollo.GetBoolWithNamespace(namespace, key)
+agollo.GetFloat64(key)
+agollo.GetFloat64WithNamespace(namespace, key)
 ```
 
 ### Get namespace file contents
 
 ```golang
-agollo.GetNamespaceContent(namespace, defaultValue)
+agollo.GetNamespaceContent(namespace)
 ```
 
 ### Get all keys

@@ -66,42 +66,42 @@ func SubscribeToNamespaces(namespaces ...string) error {
 }
 
 // GetStringWithNamespace get value from given namespace
-func GetStringWithNamespace(namespace, key, defaultValue string) string {
-	return defaultClient.GetStringWithNamespace(namespace, key, defaultValue)
+func GetStringWithNamespace(namespace, key string) (string, bool) {
+	return defaultClient.GetStringWithNamespace(namespace, key)
 }
 
 // GetString from default namespace
-func GetString(key, defaultValue string) string {
-	return GetStringWithNamespace(defaultNamespace, key, defaultValue)
+func GetString(key string) (string, bool) {
+	return GetStringWithNamespace(defaultNamespace, key)
 }
 
-func GetIntWithNamespace(namespace, key string, defaultValue int) int {
-	return defaultClient.GetIntWithNamespace(namespace, key, defaultValue)
+func GetIntWithNamespace(namespace, key string) (int, bool) {
+	return defaultClient.GetIntWithNamespace(namespace, key)
 }
 
-func GetInt(key string, defaultValue int) int {
-	return defaultClient.GetInt(key, defaultValue)
+func GetInt(key string) (int, bool) {
+	return defaultClient.GetInt(key)
 }
 
-func GetFloat64WithNamespace(namespace, key string, defaultValue float64) float64 {
-	return defaultClient.GetFloat64WithNamespace(namespace, key, defaultValue)
+func GetFloat64WithNamespace(namespace, key string) (float64, bool) {
+	return defaultClient.GetFloat64WithNamespace(namespace, key)
 }
 
-func GetFloat64(key string, defaultValue float64) float64 {
-	return defaultClient.GetFloat64(key, defaultValue)
+func GetFloat64(key string) (float64, bool) {
+	return defaultClient.GetFloat64(key)
 }
 
-func GetBoolWithNamespace(namespace, key string, defaultValue bool) bool {
-	return defaultClient.GetBoolWithNamespace(namespace, key, defaultValue)
+func GetBoolWithNamespace(namespace, key string) (bool, bool) {
+	return defaultClient.GetBoolWithNamespace(namespace, key)
 }
 
-func GetBool(key string, defaultValue bool) bool {
-	return defaultClient.GetBool(key, defaultValue)
+func GetBool(key string) (bool, bool) {
+	return defaultClient.GetBool(key)
 }
 
 // GetNamespaceContent get contents of namespace
-func GetNameSpaceContent(namespace, defaultValue string) string {
-	return defaultClient.GetNamespaceContent(namespace, defaultValue)
+func GetNameSpaceContent(namespace string) (string, bool) {
+	return defaultClient.GetNamespaceContent(namespace)
 }
 
 // GetAllKeys return all config keys in given namespace
@@ -110,7 +110,7 @@ func GetAllKeys(namespace string) []string {
 }
 
 // GetReleaseKey return release key for namespace
-func GetReleaseKey(namespace string) string {
+func GetReleaseKey(namespace string) (string, bool) {
 	return defaultClient.GetReleaseKey(namespace)
 }
 

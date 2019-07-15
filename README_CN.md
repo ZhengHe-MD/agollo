@@ -13,6 +13,7 @@
 * 容错，本地缓存
 * 零依赖
 * 实时更新通知 (observer pattern)
+* 用 gopher 的方式暴露 api --- `val, ok := agollo.GetXXX(key)`
 
 ## 依赖
 
@@ -62,14 +63,14 @@ defer recall()
 ### 获取配置
 
 ```golang
-agollo.GetString(key, defaultValue)
-agollo.GetStringWithNamespace(namespace, key, defaultValue)
-agollo.GetInt(key, defaultValue）
-agollo.GetIntWithNamespace(namespace, key, defaultValue)
-agollo.GetBool(key, defaultValue)
-agollo.GetBoolWithNamespace(namespace, key, defaultValue)
-agollo.GetFloat64(key, defaultValue)
-agollo.GetFloat64WithNamespace(namespace, key, defaultValue)
+agollo.GetString(key)
+agollo.GetStringWithNamespace(namespace, key)
+agollo.GetInt(key)
+agollo.GetIntWithNamespace(namespace, key)
+agollo.GetBool(key)
+agollo.GetBoolWithNamespace(namespace, key)
+agollo.GetFloat64(key)
+agollo.GetFloat64WithNamespace(namespace, key)
 ```
 
 ### 获取文件内容

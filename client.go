@@ -127,59 +127,68 @@ func (c *Client) SubscribeToNamespaces(namespaces ...string) error {
 	return c.longPoller.addNamespaces(namespaces...)
 }
 
-func (c *Client) GetStringWithNamespace(namespace, key, defaultValue string) string {
+func (c *Client) GetStringWithNamespace(namespace, key string) (string, bool) {
 	cache := c.mustGetCache(namespace)
-	if ret, ok := cache.get(key); ok && ret != "" {
-		return ret
+	return cache.get(key)
+}
+
+func (c *Client) GetString(key string) (string, bool) {
+	return c.GetStringWithNamespace(defaultNamespace, key)
+}
+
+func (c *Client) GetIntWithNamespace(namespace, key string) (int, bool) {
+	s, ok := c.GetStringWithNamespace(namespace, key)
+	if !ok {
+		return 0, false
 	}
-	return defaultValue
-}
 
-func (c *Client) GetString(key, defaultValue string) string {
-	return c.GetStringWithNamespace(defaultNamespace, key, defaultValue)
-}
-
-func (c *Client) GetNamespaceContent(namespace, defaultValue string) string {
-	return c.GetStringWithNamespace(namespace, "content", defaultValue)
-}
-
-func (c *Client) GetIntWithNamespace(namespace, key string, defaultValue int) int {
-	s := c.GetStringWithNamespace(namespace, key, "")
 	v, err := strconv.Atoi(s)
 	if err != nil {
-		return defaultValue
+		return 0, false
 	}
-	return v
+	return v, true
 }
 
-func (c *Client) GetInt(key string, defaultValue int) int {
-	return c.GetIntWithNamespace(defaultNamespace, key, defaultValue)
+func (c *Client) GetInt(key string) (int, bool) {
+	return c.GetIntWithNamespace(defaultNamespace, key)
 }
 
-func (c *Client) GetFloat64WithNamespace(namespace, key string, defaultValue float64) float64 {
-	s := c.GetStringWithNamespace(namespace, key, "")
+func (c *Client) GetFloat64WithNamespace(namespace, key string) (float64, bool) {
+	s, ok := c.GetStringWithNamespace(namespace, key)
+	if !ok {
+		return 0, false
+	}
+
 	v, err := strconv.ParseFloat(s, 64)
 	if err != nil {
-		return defaultValue
+		return 0, false
 	}
-	return v
+	return v, true
 }
 
-func (c *Client) GetFloat64(key string, defaultValue float64) float64 {
-	return c.GetFloat64WithNamespace(defaultNamespace, key, defaultValue)
+func (c *Client) GetFloat64(key string) (float64, bool) {
+	return c.GetFloat64WithNamespace(defaultNamespace, key)
 }
 
-func (c *Client) GetBoolWithNamespace(namespace, key string, defaultValue bool) bool {
-	s := c.GetStringWithNamespace(namespace, key, "")
+func (c *Client) GetBoolWithNamespace(namespace, key string) (bool, bool) {
+	s, ok := c.GetStringWithNamespace(namespace, key)
+	if !ok {
+		return false, false
+	}
+
 	b, err := strconv.ParseBool(s)
 	if err != nil {
-		return defaultValue
+		return false, false
 	}
-	return b
+	return b, true
 }
 
-func (c *Client) GetBool(key string, defaultValue bool) bool {
-	return c.GetBoolWithNamespace(defaultNamespace, key, defaultValue)
+func (c *Client) GetBool(key string) (bool, bool) {
+	return c.GetBoolWithNamespace(defaultNamespace, key)
+}
+
+func (c *Client) GetNamespaceContent(namespace string) (string, bool) {
+	return c.GetStringWithNamespace(namespace, "content")
 }
 
 // GetAllKeys return all config keys in given namespace
@@ -198,7 +207,7 @@ func (c *Client) GetAllKeys(namespace string) []string {
 
 // sync namespace config
 func (c *Client) sync(namesapce string) (*ChangeEvent, error) {
-	releaseKey := c.GetReleaseKey(namesapce)
+	releaseKey, _ := c.GetReleaseKey(namesapce)
 	url := configURL(c.conf, namesapce, releaseKey)
 	bts, err := c.requester.request(url)
 	if err != nil || len(bts) == 0 {
@@ -271,9 +280,8 @@ func (c *Client) getDumpFileName() string {
 }
 
 // GetReleaseKey return release key for namespace
-func (c *Client) GetReleaseKey(namespace string) string {
-	releaseKey, _ := c.releaseKeyRepo.get(namespace)
-	return releaseKey
+func (c *Client) GetReleaseKey(namespace string) (string, bool) {
+	return c.releaseKeyRepo.get(namespace)
 }
 
 func (c *Client) setReleaseKey(namespace, releaseKey string) {

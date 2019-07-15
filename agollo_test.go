@@ -53,16 +53,21 @@ func (m *mockObserver) HandleChangeEvent(ce *ChangeEvent) {
 	m.wg.Done()
 }
 
-func TestAgolloStartWatchUpdate(t *testing.T) {
-	conf := &Conf{
-		AppID:          "SampleApp",
-		Cluster:        "default",
-		NameSpaceNames: []string{defaultNamespace},
-		CacheDir:       "/tmp/agollo",
-		IP:             "localhost:8080",
-	}
+var defaultConf = &Conf{
+	AppID:          "SampleApp",
+	Cluster:        "default",
+	NameSpaceNames: []string{defaultNamespace},
+	CacheDir:       "/tmp/agollo",
+	IP:             "localhost:8080",
+}
 
-	if err := StartWithConf(conf); err != nil {
+const (
+	anotherNamespace = "anotherNamespace"
+	nonExistNamespace = "nonExistNamespace"
+)
+
+func TestAgolloStartWatchUpdate(t *testing.T) {
+	if err := StartWithConf(defaultConf); err != nil {
 		t.Error(err)
 	}
 
@@ -86,6 +91,191 @@ func TestAgolloStartWatchUpdate(t *testing.T) {
 	mockserver.Set(defaultNamespace, "key", "val")
 
 	wg.Wait()
+}
+
+func TestGetString(t *testing.T) {
+	mockserver.Set(defaultNamespace, "sk1", "sv1")
+	mockserver.Set(anotherNamespace, "sk2", "sv2")
+
+	if err := StartWithConf(defaultConf); err != nil {
+		t.Error(err)
+	}
+
+	_ = SubscribeToNamespaces(anotherNamespace)
+	_ = defaultClient.preload()
+
+
+	cases := []struct{
+		namespace string
+		key string
+		expectedVal string
+		expectedOK bool
+	} {
+		{defaultNamespace, "sk1", "sv1", true},
+		{defaultNamespace, "sk2", "", false},
+		{anotherNamespace, "sk1", "", false},
+		{anotherNamespace, "sk2", "sv2", true},
+		{nonExistNamespace, "sk1", "", false},
+		{nonExistNamespace, "sk2", "", false},
+		{"", "sk1", "sv1", true},
+		{"", "sk2", "", false},
+	}
+
+	for i, c := range cases {
+		var v string
+		var ok bool
+		if c.namespace == "" {
+			v, ok = GetString(c.key)
+		} else {
+			v, ok = GetStringWithNamespace(c.namespace, c.key)
+		}
+
+		if c.expectedVal != v {
+			t.Errorf("test %d: v expected:%v got:%v", i+1, c.expectedVal, v)
+		}
+
+		if c.expectedOK != ok {
+			t.Errorf("test %d: ok expected:%v got:%v", i+1, c.expectedOK, ok)
+		}
+	}
+}
+
+func TestGetInt(t *testing.T) {
+	mockserver.Set(defaultNamespace, "ik1", "1")
+	mockserver.Set(anotherNamespace, "ik2", "2")
+
+	if err := StartWithConf(defaultConf); err != nil {
+		t.Error(err)
+	}
+
+	_ = SubscribeToNamespaces(anotherNamespace)
+	_ = defaultClient.preload()
+
+	cases := []struct{
+		namespace string
+		key string
+		expectedVal int
+		expectedOK bool
+	} {
+		{defaultNamespace, "ik1", 1, true},
+		{defaultNamespace, "ik2", 0, false},
+		{anotherNamespace, "ik1", 0, false},
+		{anotherNamespace, "ik2", 2, true},
+		{nonExistNamespace, "ik1", 0, false},
+		{nonExistNamespace, "ik2", 0, false},
+		{"", "ik1", 1, true},
+		{"", "ik2", 0, false},
+	}
+
+	for i, c := range cases {
+		var v int
+		var ok bool
+		if c.namespace == "" {
+			v, ok = GetInt(c.key)
+		} else {
+			v, ok = GetIntWithNamespace(c.namespace, c.key)
+		}
+
+		if c.expectedVal != v {
+			t.Errorf("test %d: v expected:%v got:%v", i+1, c.expectedVal, v)
+		}
+
+		if c.expectedOK != ok {
+			t.Errorf("test %d: ok expected:%v got:%v", i+1, c.expectedOK, ok)
+		}
+	}
+}
+
+func TestGetBool(t *testing.T) {
+	mockserver.Set(defaultNamespace, "bk1", "true")
+	mockserver.Set(anotherNamespace, "bk2", "1")
+
+	if err := StartWithConf(defaultConf); err != nil {
+		t.Error(err)
+	}
+
+	_ = SubscribeToNamespaces(anotherNamespace)
+	_ = defaultClient.preload()
+
+	cases := []struct{
+		namespace string
+		key string
+		expectedVal bool
+		expectedOK bool
+	} {
+		{defaultNamespace, "bk1", true, true},
+		{defaultNamespace, "bk2", false, false},
+		{anotherNamespace, "bk1", false, false},
+		{anotherNamespace, "bk2", true, true},
+		{nonExistNamespace, "bk1", false, false},
+		{nonExistNamespace, "bk2", false, false},
+		{"", "bk1", true, true},
+		{"", "bk2", false, false},
+	}
+
+	for i, c := range cases {
+		var v bool
+		var ok bool
+		if c.namespace == "" {
+			v, ok = GetBool(c.key)
+		} else {
+			v, ok = GetBoolWithNamespace(c.namespace, c.key)
+		}
+
+		if c.expectedVal != v {
+			t.Errorf("test %d: v expected:%v got:%v", i+1, c.expectedVal, v)
+		}
+
+		if c.expectedOK != ok {
+			t.Errorf("test %d: ok expected:%v got:%v", i+1, c.expectedOK, ok)
+		}
+	}
+}
+
+func TestGetFloat64(t *testing.T) {
+	mockserver.Set(defaultNamespace, "fk1", "3.142")
+	mockserver.Set(anotherNamespace, "fk2", "2.718")
+
+	if err := StartWithConf(defaultConf); err != nil {
+		t.Error(err)
+	}
+
+	_ = SubscribeToNamespaces(anotherNamespace)
+	_ = defaultClient.preload()
+
+	cases := []struct{
+		namespace string
+		key string
+		expectedVal float64
+		expectedOK bool
+	} {
+		{defaultNamespace, "fk1", 3.142, true},
+		{defaultNamespace, "fk2", 0, false},
+		{anotherNamespace, "fk1", 0, false},
+		{anotherNamespace, "fk2", 2.718, true},
+		{nonExistNamespace, "fk1", 0, false},
+		{nonExistNamespace, "fk2", 0, false},
+		{"", "fk1", 3.142, true},
+		{"", "fk2", 0, false},
+	}
+
+	for i, c := range cases {
+		var v float64
+		var ok bool
+		if c.namespace == "" {
+			v, ok = GetFloat64(c.key)
+		} else {
+			v, ok = GetFloat64WithNamespace(c.namespace, c.key)
+		}
+
+		if c.expectedVal != v {
+			t.Errorf("test %d: v expected:%v got:%v", i+1, c.expectedVal, v)
+		}
+
+		if c.expectedOK != ok {
+			t.Errorf("test %d: ok expected:%v got:%v", i+1, c.expectedOK, ok)
+		}
+	}
 }
 
 func TestAgolloStart(t *testing.T) {
