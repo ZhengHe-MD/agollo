@@ -102,7 +102,7 @@ func TestGetString(t *testing.T) {
 	}
 
 	_ = SubscribeToNamespaces(anotherNamespace)
-	_ = defaultClient.preload()
+	_ = defaultAgollo.Client.preload()
 
 
 	cases := []struct{
@@ -149,7 +149,7 @@ func TestGetInt(t *testing.T) {
 	}
 
 	_ = SubscribeToNamespaces(anotherNamespace)
-	_ = defaultClient.preload()
+	_ = defaultAgollo.Client.preload()
 
 	cases := []struct{
 		namespace string
@@ -195,7 +195,7 @@ func TestGetBool(t *testing.T) {
 	}
 
 	_ = SubscribeToNamespaces(anotherNamespace)
-	_ = defaultClient.preload()
+	_ = defaultAgollo.Client.preload()
 
 	cases := []struct{
 		namespace string
@@ -241,7 +241,7 @@ func TestGetFloat64(t *testing.T) {
 	}
 
 	_ = SubscribeToNamespaces(anotherNamespace)
-	_ = defaultClient.preload()
+	_ = defaultAgollo.Client.preload()
 
 	cases := []struct{
 		namespace string
