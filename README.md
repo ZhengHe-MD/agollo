@@ -1,6 +1,8 @@
-Note: This is a fork of github.com/philchia/agollo
+本项目 fork 自 github.com/philchia/agollo
 
-# agollo is a golang client for apollo 🚀 [![CircleCI](https://circleci.com/gh/ZhengHe-MD/agollo.svg?style=svg)](https://circleci.com/gh/ZhengHe-MD/agollo)
+[english version can be found here](./README_EN.md)
+
+# apollo 客户端 🚀 [![CircleCI](https://circleci.com/gh/ZhengHe-MD/agollo.svg?style=svg)](https://circleci.com/gh/ZhengHe-MD/agollo)
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/ZhengHe-MD/agollo)](https://goreportcard.com/report/github.com/ZhengHe-MD/agollo)
 [![Coverage Status](https://coveralls.io/repos/github/ZhengHe-MD/agollo/badge.svg?branch=master)](https://coveralls.io/github/ZhengHe-MD/agollo?branch=master)
@@ -8,34 +10,30 @@ Note: This is a fork of github.com/philchia/agollo
 [![GoDoc](https://godoc.org/github.com/ZhengHe-MD/agollo?status.svg)](https://godoc.org/github.com/ZhengHe-MD/agollo)
 ![GitHub release](https://img.shields.io/github/release/ZhengHe-MD/agollo.svg)
 
-## Simple chinese
+## 主要变化
 
-[简体中文](./README_CN.md)
+##### 1. 用 go 习惯重新设计 api
 
-## Main changes of this fork
-
-##### 1. redesign the api in gopher's way
-
-before, the agollo module followed the Java's way of api design:
+原项目暴露的 api 沿用了 Java 的设计习惯：
 
 ```go
 val := agollo.GetString(key, defaultVal)
 ```
 
-the problem is that:
+这种设计的问题在于：
 
-1. we're forced to provide a default value, which is awkward when using golang, we have zero value instead of null
-2. we can't decide whether the value exists or not. Let's say we have fallback config in apollo, it's impossible to decide whether or not to use fallback config.
+* 我们必须在调用时提供默认值，但在 go 语言中，我们有零值 (zero value)，而无需考虑 null
+* 我们无法确定 key (如 groupA.item) 是否存在。假如想要在 apollo 中设置 fallback 值，比如 groupDefault.item，我们将因为无法判断 key 是否存在而无法决定是否使用 fallback 值
 
-so it's necessary to follow the gopher's way:
+因此，我们修改这种设计：
 
 ```go
 val, ok := agollo.GetString(key)
 ```
 
-##### 2. multiple instances support
+##### 2. 多实例支持
 
-before, the agollo module implements a singleton agollo client, called **defaultClient**, all subsequent requests are sent throught this client. however, sometimes we need to visit different apps' configs in the same process, for example, the **middleware** app and the **serviceA** app. since we don't want the developers  of **serviceA** to have control over the general settings of **middleware**, it's necessary to support multiple agollo client instances, while keeping the defaultClient working as before at the same time.
+原项目使用了单例模式，即整个进程中只有一个唯一的 agollo 客户端实例（defaultClient），所有请求都必须通过这个实例来发送。然而，有时候我们需要同时访问多个 app 的配置信息，如 middleware 和 serviceA，而我们不希望 serviceA 的开发者可以控制 middleware 的配置，这时候就需要多实例支持：
 
 ```go
 // this will use a different client instance
@@ -46,9 +44,9 @@ if err := ag.Start(); err != nil {
 ag.GetString(key)
 ```
 
-##### 3. support observer pattern for hot config updates
+##### 3. 利用 observer pattern 支持配置更新监听
 
-before, the agollo module provides a **WatchUpdate** method that returns a read-only **ChangeEvent** channel for application to listen on. However, the problem is that each change event can be consumed only once. if multiple goroutines simultaneously read from the same channel, some important updates can be missed. So we decide to implement an observer pattern, to support multiple goroutines consuming every change event, just like subscriptions.
+原项目提供 WatchUpdate 方法，调用它返回一个只读的配置变化事件 channel，应用可以从这个 channel 消费到配置变化事件，从而实现热更新。但问题在于，这个 channel 里的每个事件只会被消费一次，如果有多个 goroutines 在消费它，那么很可能出现错过重要更新的问题。于是，我们决定在这里利用 observer pattern，每个 goroutine 都可以通过订阅的方式来监听所有配置变化事件：
 
 ```go
 type simpleObserver struct {}
@@ -59,9 +57,9 @@ ag.RegisterObserver(&simpleObserver{})
 ag.StartWatchUpdate()
 ```
 
-##### 4. support customized logger
+##### 4. 支持定制化 Logger
 
-when you want to integrate agollo into a large infrastructure, we may want logs from agollo print in a consistent way, as long as your logger implement the following interface:
+当我们想要在已有的基础设施中融合 agollo 时，有时候需要看到 agollo 内部的日志信息，并按已有的方式打印、记录日志，这时候，你的 Logger 只需要实现下面的接口：
 
 ```go
 type AgolloLogger interface {
@@ -69,9 +67,15 @@ type AgolloLogger interface {
 }
 ```
 
-##### 5. more config getters support
+你就可以通过 SetLogger 来配置 Logger
 
-we add some useful config getters to deal with different data types:
+```go
+agollo.SetLogger(logger)
+```
+
+##### 5. 更多的 config getters 支持
+
+我们增加了更多的 getters:
 
 ```go
 GetString(key)
@@ -80,29 +84,29 @@ GetBool(key)
 GetFloat64(key)
 ```
 
-## Feature
+## 功能
 
-* Multiple namespace support
-* Fail tolerant
-* Zero dependency
-* Subscription of change event
-* Customized logger support
-* gopher's way of api design
-* Multiple instances support
+* 多 namespace 支持
+* 容错，本地缓存
+* 零依赖
+* 配置变化事件订阅
+* 自定义 Logger
+* 符合 go 习惯的 api
+* 多实例支持
 
-## Required
+## 依赖
 
-**go 1.9** or later
+**go 1.9** 或更新
 
-## Installation
+## 安装
 
 ```sh
 $ go get -u github.com/ZhengHe-MD/agollo/v4
 ```
 
-## Usage
+## 使用
 
-#### Hello World Example
+#### Hello world 例子
 
 ```go
 import "github.com/ZhengHe-MD/agollo/v4"
@@ -130,7 +134,7 @@ func main() {
 }
 ```
 
-#### Query Different Namespaces
+#### 查询不同的 Namespaces
 
 ```go
 import "github.com/ZhengHe-MD/agollo/v4"
@@ -151,7 +155,7 @@ func main() {
 }
 ```
 
-#### Listen to update events
+#### 监听配置更新
 
 ```go
 import "github.com/ZhengHe-MD/agollo/v4"
@@ -169,22 +173,31 @@ func main() {
 }
 ```
 
-#### Subscribe to new namespaces
+#### 获取配置
+
+```golang
+agollo.GetString(key)
+agollo.GetStringWithNamespace(namespace, key)
+agollo.GetInt(key)
+agollo.GetIntWithNamespace(namespace, key)
+agollo.GetBool(key)
+agollo.GetBoolWithNamespace(namespace, key)
+agollo.GetFloat64(key)
+agollo.GetFloat64WithNamespace(namespace, key)
+```
+
+#### 订阅新的 namespace 配置
 
 ```golang
 agollo.SubscribeToNamespaces("newNamespace1", "newNamespace2")
 ```
 
-#### Set logger
+#### 自定义 logger
 
 ```golang
 agollo.SetLogger(logger)
 ```
 
-## API
+## 许可
 
-for full api please check the [godoc](https://godoc.org/github.com/ZhengHe-MD/agollo)
-
-## License
-
-agollo is released under MIT license
+agollo 使用 MIT 许可
