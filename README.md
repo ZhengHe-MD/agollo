@@ -1,13 +1,12 @@
 Note: This is a fork of github.com/philchia/agollo
 
-# agollo is a golang client for apollo 🚀 [![CircleCI](https://circleci.com/gh/philchia/agollo/tree/master.svg?style=svg)](https://circleci.com/gh/philchia/agollo/tree/master)
+# agollo is a golang client for apollo 🚀 [![CircleCI](https://circleci.com/gh/ZhengHe-MD/agollo.svg?style=svg)](https://circleci.com/gh/ZhengHe-MD/agollo)
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/philchia/agollo)](https://goreportcard.com/report/github.com/philchia/agollo)
-[![codebeat badge](https://codebeat.co/badges/e31b4a09-f531-4b74-a86a-775f46436539)](https://codebeat.co/projects/github-com-philchia-agollo-master)
-[![Coverage Status](https://coveralls.io/repos/github/philchia/agollo/badge.svg?branch=master)](https://coveralls.io/github/philchia/agollo?branch=master)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ZhengHe-MD/agollo)](https://goreportcard.com/report/github.com/ZhengHe-MD/agollo)
+[![Coverage Status](https://coveralls.io/repos/github/ZhengHe-MD/agollo/badge.svg?branch=master)](https://coveralls.io/github/ZhengHe-MD/agollo?branch=master)
 [![golang](https://img.shields.io/badge/Language-Go-green.svg?style=flat)](https://golang.org)
-[![GoDoc](https://godoc.org/github.com/philchia/zen?status.svg)](https://godoc.org/github.com/philchia/agollo)
-![GitHub release](https://img.shields.io/github/release/philchia/agollo.svg)
+[![GoDoc](https://godoc.org/github.com/ZhengHe-MD/agollo?status.svg)](https://godoc.org/github.com/ZhengHe-MD/agollo)
+![GitHub release](https://img.shields.io/github/release/ZhengHe-MD/agollo.svg)
 
 ## Simple chinese
 
