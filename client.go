@@ -94,7 +94,7 @@ func (c *Client) Stop() error {
 // fetchAllCinfig fetch from remote, if failed load from local file
 func (c *Client) preload() error {
 	if err := c.longPoller.preload(); err != nil {
-		defaultLogger.Printf("[agollo] preload err:%v", err)
+		defaultLogger.Printf("module:agollo method:preload err:%v", err)
 		return c.loadLocal(c.getDumpFileName())
 	}
 	return nil
@@ -210,6 +210,7 @@ func (c *Client) sync(namesapce string) (*ChangeEvent, error) {
 	releaseKey, _ := c.GetReleaseKey(namesapce)
 	url := configURL(c.conf, namesapce, releaseKey)
 	bts, err := c.requester.request(url)
+	defaultLogger.Printf("module:agollo method:Client.sync url:%s data:%s err:%v", url, bts, err)
 	if err != nil || len(bts) == 0 {
 		return nil, err
 	}

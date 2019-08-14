@@ -89,7 +89,7 @@ func (p *longPoller) watchUpdates() {
 		select {
 		case <-timer.C:
 			if err := p.pumpUpdates(); err != nil {
-				defaultLogger.Printf("[agollo] watchUpdates err:%v", err)
+				defaultLogger.Printf("module:agollo method:watchUpdates err:%v", err)
 			}
 			timer.Reset(p.pollerInterval)
 
@@ -140,6 +140,7 @@ func (p *longPoller) poll() ([]*notification, error) {
 	notifications := p.notifications.toString()
 	url := notificationURL(p.conf, notifications)
 	bts, err := p.requester.request(url)
+	defaultLogger.Printf("module:agollo method:longPoller.poll url:%s data:%s err:%v", url, bts, err)
 	if err != nil || len(bts) == 0 {
 		return nil, err
 	}
