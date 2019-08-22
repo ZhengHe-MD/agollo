@@ -4,7 +4,6 @@ import (
 	"log"
 	"os"
 	"testing"
-	"time"
 )
 
 func TestAgolloLogger(t *testing.T) {
@@ -23,6 +22,4 @@ func TestAgolloLogger(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-
-	time.Sleep(90 * time.Second)
 }

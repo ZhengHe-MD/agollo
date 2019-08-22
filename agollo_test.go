@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ZhengHe-MD/agollo/internal/mockserver"
+	"github.com/ZhengHe-MD/agollo/v4/internal/mockserver"
 )
 
 func TestMain(m *testing.M) {

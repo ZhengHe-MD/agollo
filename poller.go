@@ -139,8 +139,9 @@ func (p *longPoller) pumpUpdates() error {
 func (p *longPoller) poll() ([]*notification, error) {
 	notifications := p.notifications.toString()
 	url := notificationURL(p.conf, notifications)
+	defaultLogger.Printf("module:agollo method:longPoller.poll url:%s start", url)
 	bts, err := p.requester.request(url)
-	defaultLogger.Printf("module:agollo method:longPoller.poll url:%s data:%s err:%v", url, bts, err)
+	defaultLogger.Printf("module:agollo method:longPoller.poll url:%s finish with data:%s err:%v", url, bts, err)
 	if err != nil || len(bts) == 0 {
 		return nil, err
 	}
