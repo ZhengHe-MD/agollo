@@ -93,11 +93,17 @@ func (c *Client) Stop() error {
 
 // fetchAllCinfig fetch from remote, if failed load from local file
 func (c *Client) preload() error {
-	if err := c.longPoller.preload(); err != nil {
-		defaultLogger.Printf("module:agollo method:preload err:%v", err)
-		return c.loadLocal(c.getDumpFileName())
+	var err error
+	for _, v := range c.conf.NameSpaceNames {
+		if _, e := c.sync(v); e != nil {
+			defaultLogger.Printf("module:agollo method:preload namespace:%v, err:%v", v, err)
+			if e1 := c.loadLocal(c.getDumpFileName()); e1 != nil {
+				err = e1
+			}
+		}
 	}
-	return nil
+
+	return err
 }
 
 // loadLocal load caches from local file
