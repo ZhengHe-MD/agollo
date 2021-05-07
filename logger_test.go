@@ -16,7 +16,7 @@ func TestAgolloLogger(t *testing.T) {
 		Cluster:        "default",
 		NameSpaceNames: []string{"application"},
 		CacheDir:       "/tmp/agollo",
-		IP:             "apollo-meta.ibanyu.com:30002",
+		IP:             "anyhost:anyip",
 	})
 
 	if err != nil {
