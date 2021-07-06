@@ -8,7 +8,18 @@ import (
 	"os"
 	"path"
 	"strconv"
+	"strings"
 	"sync"
+
+	"github.com/ZhengHe-MD/agollo/v4/parse"
+)
+
+type namespaceTyp string
+
+const (
+	otherNamespaceTyp namespaceTyp = ""
+	ymlNamespaceTyp   namespaceTyp = "yml"
+	yamlNamespaceTyp  namespaceTyp = "yaml"
 )
 
 // Client for apollo
@@ -27,16 +38,16 @@ type Client struct {
 	cancel context.CancelFunc
 
 	observers []ChangeEventObserver
-	mu sync.RWMutex
+	mu        sync.RWMutex
 }
 
 // result of query config
 type result struct {
 	// AppID          string            `json:"appId"`
 	// Cluster        string            `json:"cluster"`
-	NamespaceName  string            `json:"namespaceName"`
-	Configurations map[string]string `json:"configurations"`
-	ReleaseKey     string            `json:"releaseKey"`
+	NamespaceName  string                 `json:"namespaceName"`
+	Configurations map[string]interface{} `json:"configurations"`
+	ReleaseKey     string                 `json:"releaseKey"`
 }
 
 // NewClient create client from conf
@@ -135,7 +146,15 @@ func (c *Client) SubscribeToNamespaces(namespaces ...string) error {
 
 func (c *Client) GetStringWithNamespace(namespace, key string) (string, bool) {
 	cache := c.mustGetCache(namespace)
-	return cache.get(key)
+	val, ok := cache.get(key)
+	if !ok {
+		return "", false
+	}
+	strVal, ok := val.(string)
+	if !ok {
+		return "", false
+	}
+	return strVal, true
 }
 
 func (c *Client) GetString(key string) (string, bool) {
@@ -143,16 +162,16 @@ func (c *Client) GetString(key string) (string, bool) {
 }
 
 func (c *Client) GetIntWithNamespace(namespace, key string) (int, bool) {
-	s, ok := c.GetStringWithNamespace(namespace, key)
+	cache := c.mustGetCache(namespace)
+	val, ok := cache.get(key)
 	if !ok {
 		return 0, false
 	}
-
-	v, err := strconv.Atoi(s)
-	if err != nil {
+	IntVal, ok := val.(int)
+	if !ok {
 		return 0, false
 	}
-	return v, true
+	return IntVal, true
 }
 
 func (c *Client) GetInt(key string) (int, bool) {
@@ -193,8 +212,76 @@ func (c *Client) GetBool(key string) (bool, bool) {
 	return c.GetBoolWithNamespace(defaultNamespace, key)
 }
 
+func (c *Client) GetIntSliceWithNamespace(namespace, key string) ([]int, bool) {
+	cache := c.mustGetCache(namespace)
+	val, ok := cache.get(key)
+	if !ok {
+		return []int{}, false
+	}
+	intSliceIfVal, ok := val.([]interface{})
+	if !ok {
+		return []int{}, false
+	}
+	intSlices := []int{}
+	for _, intIfVal := range intSliceIfVal {
+		intData, ok := intIfVal.(int)
+		if !ok {
+			continue
+		}
+		intSlices = append(intSlices, intData)
+	}
+	return intSlices, true
+}
+
+func (c *Client) GetIntSlice(key string) ([]int, bool) {
+	return c.GetIntSliceWithNamespace(defaultNamespace, key)
+}
+
+func (c *Client) GetStringSliceWithNamespace(namespace, key string) ([]string, bool) {
+	cache := c.mustGetCache(namespace)
+	val, ok := cache.get(key)
+	if !ok {
+		return []string{}, false
+	}
+	stringSliceIfVal, ok := val.([]interface{})
+	if !ok {
+		return []string{}, false
+	}
+	stringSlices := []string{}
+	for _, stringIfVal := range stringSliceIfVal {
+		stringData, ok := stringIfVal.(string)
+		if !ok {
+			continue
+		}
+		stringSlices = append(stringSlices, stringData)
+	}
+	return stringSlices, true
+}
+
+func (c *Client) GetStringSlice(key string) ([]string, bool) {
+	return c.GetStringSliceWithNamespace(defaultNamespace, key)
+}
+
+func (c *Client) GetYmlContent(val interface{}) {
+
+}
+
 func (c *Client) GetNamespaceContent(namespace string) (string, bool) {
-	return c.GetStringWithNamespace(namespace, "content")
+	namespaceTyp := c.getNameSpaceTyp(namespace)
+	return c.GetStringWithNamespace(namespace, string(namespaceTyp)+"content")
+}
+
+func (c *Client) GetNamespaceVal(namespace string, val interface{}) error {
+	namespaceTyp := c.getNameSpaceTyp(namespace)
+	parser := parse.GetParser(string(namespaceTyp))
+	content, ok := c.GetStringWithNamespace(namespace, string(namespaceTyp)+"content")
+	if !ok {
+		return nil
+	}
+	if err := parser.Unmarshal([]byte(content), val); err != nil {
+		return err
+	}
+	return nil
 }
 
 // GetAllKeys return all config keys in given namespace
@@ -245,18 +332,20 @@ func (c *Client) handleResult(result *result) *ChangeEvent {
 		Namespace: result.NamespaceName,
 		Changes:   map[string]*Change{},
 	}
-
+	parser := parse.GetParser(string(c.getNameSpaceTyp(result.NamespaceName)))
 	cache := c.mustGetCache(result.NamespaceName)
 	kv := cache.dump()
 
+	newConfigurations := c.getConfigurations(parser, result.Configurations)
+
 	for k, v := range kv {
-		if _, ok := result.Configurations[k]; !ok {
+		if _, ok := newConfigurations[k]; !ok {
 			cache.delete(k)
 			ret.Changes[k] = makeDeleteChange(k, v)
 		}
 	}
 
-	for k, v := range result.Configurations {
+	for k, v := range newConfigurations {
 		cache.set(k, v)
 		old, ok := kv[k]
 		if !ok {
@@ -288,7 +377,15 @@ func (c *Client) getDumpFileName() string {
 
 // GetReleaseKey return release key for namespace
 func (c *Client) GetReleaseKey(namespace string) (string, bool) {
-	return c.releaseKeyRepo.get(namespace)
+	val, ok := c.releaseKeyRepo.get(namespace)
+	if !ok {
+		return "", false
+	}
+	strVal, ok := val.(string)
+	if !ok {
+		return "", false
+	}
+	return strVal, true
 }
 
 func (c *Client) setReleaseKey(namespace, releaseKey string) {
@@ -339,4 +436,39 @@ func (c *Client) getObservers() []ChangeEventObserver {
 	defer c.mu.RUnlock()
 
 	return c.observers
+}
+
+func (c *Client) getNameSpaceTyp(namespace string) namespaceTyp {
+	if strings.HasSuffix(namespace, ".yml") {
+		return ymlNamespaceTyp
+	}
+	if strings.HasSuffix(namespace, ".yaml") {
+		return yamlNamespaceTyp
+	}
+	return otherNamespaceTyp
+}
+
+func (c *Client) getConfigurations(parser parse.ContentParser, configurations map[string]interface{}) map[string]interface{} {
+	if parser == nil {
+		return configurations
+	}
+	newConfigurations := make(map[string]interface{})
+	for key, val := range configurations {
+		tempConfigurations, err := parser.Parse(val)
+		if err != nil {
+			continue
+		}
+		if tempConfigurations == nil {
+			newConfigurations[key] = val
+			continue
+		}
+		for k, v := range tempConfigurations {
+			newConfigurations[k] = v
+		}
+	}
+	content := parser.GetParserType()
+	if val, ok := configurations["content"]; ok {
+		newConfigurations[content+"content"] = val
+	}
+	return newConfigurations
 }
