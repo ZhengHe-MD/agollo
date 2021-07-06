@@ -12,3 +12,7 @@ func (d *Parser) Parse(configContent interface{}) (map[string]interface{}, error
 func (this *Parser) GetParserType() string {
 	return "properties"
 }
+
+func (this *Parser) Unmarshal(data []byte, val interface{}) error {
+	return nil
+}

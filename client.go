@@ -271,6 +271,19 @@ func (c *Client) GetNamespaceContent(namespace string) (string, bool) {
 	return c.GetStringWithNamespace(namespace, string(namespaceTyp)+"content")
 }
 
+func (c *Client) GetNamespaceVal(namespace string, val interface{}) error {
+	namespaceTyp := c.getNameSpaceTyp(namespace)
+	parser := parse.GetParser(string(namespaceTyp))
+	content, ok := c.GetStringWithNamespace(namespace, string(namespaceTyp)+"content")
+	if !ok {
+		return nil
+	}
+	if err := parser.Unmarshal([]byte(content), val); err != nil {
+		return err
+	}
+	return nil
+}
+
 // GetAllKeys return all config keys in given namespace
 func (c *Client) GetAllKeys(namespace string) []string {
 	var keys []string

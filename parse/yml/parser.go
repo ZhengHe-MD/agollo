@@ -3,6 +3,7 @@ package yml
 import (
 	"bytes"
 	"github.com/spf13/viper"
+	"gopkg.in/yaml.v2"
 )
 
 type Parser struct {
@@ -50,4 +51,8 @@ func (this *Parser) convertToMap() map[string]interface{} {
 
 func (this *Parser) GetParserType() string {
 	return "yml"
+}
+
+func (this *Parser) Unmarshal(data []byte, val interface{}) error {
+	return yaml.Unmarshal(data, val)
 }

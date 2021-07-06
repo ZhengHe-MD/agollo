@@ -8,6 +8,7 @@ import (
 type ContentParser interface {
 	Parse(configContent interface{}) (map[string]interface{}, error)
 	GetParserType() string
+	Unmarshal(data []byte, val interface{}) error
 }
 
 func GetParser(typ string) ContentParser {
