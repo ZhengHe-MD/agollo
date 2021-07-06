@@ -268,7 +268,7 @@ func (c *Client) GetYmlContent(val interface{}) {
 
 func (c *Client) GetNamespaceContent(namespace string) (string, bool) {
 	namespaceTyp := c.getNameSpaceTyp(namespace)
-	return c.GetStringWithNamespace(namespace, string(namespaceTyp)+"_content")
+	return c.GetStringWithNamespace(namespace, string(namespaceTyp)+"content")
 }
 
 // GetAllKeys return all config keys in given namespace
@@ -455,7 +455,7 @@ func (c *Client) getConfigurations(parser parse.ContentParser, configurations ma
 	}
 	content := parser.GetParserType()
 	if val, ok := configurations["content"]; ok {
-		newConfigurations[content+"_content"] = val
+		newConfigurations[content+"content"] = val
 	}
 	return newConfigurations
 }
