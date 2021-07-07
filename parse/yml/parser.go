@@ -6,6 +6,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// Parser yml 转换器
 type Parser struct {
 	Vp *viper.Viper
 }
@@ -18,12 +19,13 @@ func NewParser() *Parser {
 	return &p
 }
 
+// Parse 内存内容 => yml 数据格式转换器
 func (this *Parser) Parse(configContent interface{}) (map[string]interface{}, error) {
 	content, ok := configContent.(string)
 	if !ok {
 		return nil, nil
 	}
-	if "" == content {
+	if content == "" {
 		return nil, nil
 	}
 

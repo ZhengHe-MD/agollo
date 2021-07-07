@@ -1,12 +1,12 @@
-package yaml
+package json
 
 import (
 	"bytes"
+	"encoding/json"
 	"github.com/spf13/viper"
-	"gopkg.in/yaml.v2"
 )
 
-// Parser yaml 转换器
+// Parser json 转换器
 type Parser struct {
 	Vp *viper.Viper
 }
@@ -15,11 +15,11 @@ func NewParser() *Parser {
 	p := Parser{
 		Vp: viper.New(),
 	}
-	p.Vp.SetConfigType("yaml")
+	p.Vp.SetConfigType("json")
 	return &p
 }
 
-// Parse 内存内容 => yaml 数据格式转换器
+// Parse 内存内容 => json 数据格式转换器
 func (this *Parser) Parse(configContent interface{}) (map[string]interface{}, error) {
 	content, ok := configContent.(string)
 	if !ok {
@@ -52,9 +52,9 @@ func (this *Parser) convertToMap() map[string]interface{} {
 }
 
 func (this *Parser) GetParserType() string {
-	return "yaml"
+	return "json"
 }
 
 func (this *Parser) Unmarshal(data []byte, val interface{}) error {
-	return yaml.Unmarshal(data, val)
+	return json.Unmarshal(data, val)
 }

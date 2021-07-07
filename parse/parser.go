@@ -1,6 +1,9 @@
 package parse
 
 import (
+	"github.com/ZhengHe-MD/agollo/v4/parse/json"
+	"github.com/ZhengHe-MD/agollo/v4/parse/normal"
+	"github.com/ZhengHe-MD/agollo/v4/parse/properties"
 	"github.com/ZhengHe-MD/agollo/v4/parse/yaml"
 	"github.com/ZhengHe-MD/agollo/v4/parse/yml"
 )
@@ -17,7 +20,11 @@ func GetParser(typ string) ContentParser {
 		return yml.NewParser()
 	case "yaml":
 		return yaml.NewParser()
+	case "json":
+		return json.NewParser()
+	case "properties":
+		return properties.NewParser()
 	default:
-		return nil
+		return normal.NewParser()
 	}
 }
