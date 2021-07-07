@@ -17,9 +17,11 @@ import (
 type namespaceTyp string
 
 const (
-	otherNamespaceTyp namespaceTyp = ""
-	ymlNamespaceTyp   namespaceTyp = "yml"
-	yamlNamespaceTyp  namespaceTyp = "yaml"
+	emptyNamespaceTyp      namespaceTyp = ""
+	ymlNamespaceTyp        namespaceTyp = "yml"
+	yamlNamespaceTyp       namespaceTyp = "yaml"
+	jsonNamespaceTyp       namespaceTyp = "json"
+	propertiesNamespaceTyp namespaceTyp = "properties"
 )
 
 // Client for apollo
@@ -222,13 +224,14 @@ func (c *Client) GetIntSliceWithNamespace(namespace, key string) ([]int, bool) {
 	if !ok {
 		return []int{}, false
 	}
-	intSlices := []int{}
-	for _, intIfVal := range intSliceIfVal {
+	intSlices := make([]int, len(intSliceIfVal))
+	for idx, intIfVal := range intSliceIfVal {
 		intData, ok := intIfVal.(int)
 		if !ok {
-			continue
+			defaultLogger.Printf("module:agollo method:GetStringSliceWithNamespace assertion failed")
+			return []int{}, false
 		}
-		intSlices = append(intSlices, intData)
+		intSlices[idx] = intData
 	}
 	return intSlices, true
 }
@@ -247,13 +250,14 @@ func (c *Client) GetStringSliceWithNamespace(namespace, key string) ([]string, b
 	if !ok {
 		return []string{}, false
 	}
-	stringSlices := []string{}
-	for _, stringIfVal := range stringSliceIfVal {
+	stringSlices := make([]string, len(stringSliceIfVal))
+	for idx, stringIfVal := range stringSliceIfVal {
 		stringData, ok := stringIfVal.(string)
 		if !ok {
-			continue
+			defaultLogger.Printf("module:agollo method:GetStringSliceWithNamespace assertion failed")
+			return []string{}, false
 		}
-		stringSlices = append(stringSlices, stringData)
+		stringSlices[idx] = stringData
 	}
 	return stringSlices, true
 }
@@ -262,15 +266,12 @@ func (c *Client) GetStringSlice(key string) ([]string, bool) {
 	return c.GetStringSliceWithNamespace(defaultNamespace, key)
 }
 
-func (c *Client) GetYmlContent(val interface{}) {
-
-}
-
 func (c *Client) GetNamespaceContent(namespace string) (string, bool) {
 	namespaceTyp := c.getNameSpaceTyp(namespace)
 	return c.GetStringWithNamespace(namespace, string(namespaceTyp)+"content")
 }
 
+// 只有文件类型配置可以 Unmarshal, 类似： properties 这种配置类型是 key , value 结构,没有所谓 content 字段，不适合 Unmarshal
 func (c *Client) GetNamespaceVal(namespace string, val interface{}) error {
 	namespaceTyp := c.getNameSpaceTyp(namespace)
 	parser := parse.GetParser(string(namespaceTyp))
@@ -445,13 +446,16 @@ func (c *Client) getNameSpaceTyp(namespace string) namespaceTyp {
 	if strings.HasSuffix(namespace, ".yaml") {
 		return yamlNamespaceTyp
 	}
-	return otherNamespaceTyp
+	if strings.HasSuffix(namespace, ".json") {
+		return jsonNamespaceTyp
+	}
+	if strings.HasSuffix(namespace, ".properties") {
+		return propertiesNamespaceTyp
+	}
+	return emptyNamespaceTyp
 }
 
 func (c *Client) getConfigurations(parser parse.ContentParser, configurations map[string]interface{}) map[string]interface{} {
-	if parser == nil {
-		return configurations
-	}
 	newConfigurations := make(map[string]interface{})
 	for key, val := range configurations {
 		tempConfigurations, err := parser.Parse(val)

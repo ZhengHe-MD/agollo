@@ -1,10 +1,23 @@
 package properties
 
-// Parser properties转换器
+import (
+	"github.com/spf13/viper"
+)
+
+// Parser properties 转换器
 type Parser struct {
+	Vp *viper.Viper
 }
 
-// Parse 内存内容=>properties文件转换器
+func NewParser() *Parser {
+	p := Parser{
+		Vp: viper.New(),
+	}
+	p.Vp.SetConfigType("properties")
+	return &p
+}
+
+// Parse 内存内容 => properties 数据格式转换器
 func (d *Parser) Parse(configContent interface{}) (map[string]interface{}, error) {
 	return nil, nil
 }

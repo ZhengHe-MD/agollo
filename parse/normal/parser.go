@@ -3,6 +3,11 @@ package normal
 type Parser struct {
 }
 
+func NewParser() *Parser {
+	p := Parser{}
+	return &p
+}
+
 func (d *Parser) Parse(configContent interface{}) (map[string]interface{}, error) {
 	return nil, nil
 }
