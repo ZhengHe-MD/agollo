@@ -43,7 +43,7 @@ func (n *namespaceCache) dump(name string) error {
 	n.lock.Lock()
 	defer n.lock.Unlock()
 
-	var dumps = map[string]map[string]string{}
+	var dumps = make(map[string]map[string]interface{})
 
 	for namespace, cache := range n.caches {
 		dumps[namespace] = cache.dump()
@@ -67,7 +67,7 @@ func (n *namespaceCache) load(name string) error {
 	}
 	defer f.Close()
 
-	var dumps = map[string]map[string]string{}
+	var dumps = make(map[string]map[string]interface{})
 
 	if err := gob.NewDecoder(f).Decode(&dumps); err != nil {
 		return err
@@ -93,15 +93,13 @@ func newCache() *cache {
 	}
 }
 
-func (c *cache) set(key, val string) {
+func (c *cache) set(key string, val interface{}) {
 	c.kv.Store(key, val)
 }
 
-func (c *cache) get(key string) (string, bool) {
+func (c *cache) get(key string) (interface{}, bool) {
 	if val, ok := c.kv.Load(key); ok {
-		if ret, ok := val.(string); ok {
-			return ret, true
-		}
+		return val, true
 	}
 	return "", false
 }
@@ -110,12 +108,11 @@ func (c *cache) delete(key string) {
 	c.kv.Delete(key)
 }
 
-func (c *cache) dump() map[string]string {
-	var ret = map[string]string{}
+func (c *cache) dump() map[string]interface{} {
+	var ret = make(map[string]interface{})
 	c.kv.Range(func(key, val interface{}) bool {
 		k, _ := key.(string)
-		v, _ := val.(string)
-		ret[k] = v
+		ret[k] = val
 
 		return true
 	})
